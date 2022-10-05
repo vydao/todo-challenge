@@ -3,7 +3,7 @@
 
 ![30-days-challenge](https://raw.githubusercontent.com/vydao/rails-todochallenge/master/public/30dayschallenge.png)
 
-# Features
+## Features
 + Account creation
 + Login
 + Todo list creation
@@ -11,11 +11,14 @@
 + Invite friend to task
 + Challenge statictics
 + Bonus points:
-- Set privacy to task ( public/private (only invitted can join))
-- Nice template/ layout
-- Deploy your app to heroku or any servers
+  - Write the tests first
+  - Clean code
+  - Set privacy to task ( public/private (only invitted can join))
+  - Nice template/ layout
+  - Deploy your app to heroku or any servers
+  
 
-# Notes
+## Notes
 + Database postgreSQL (but you can use any other one you like, e.g Mysql,...)
 + Authentication using JWT or Pasto
 + Use Gin web framework
