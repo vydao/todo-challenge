@@ -13,6 +13,7 @@ type Challenge struct {
 	StartDate   time.Time `json:"start_date"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	UserID      int64     `json:"user_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

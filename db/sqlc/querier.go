@@ -9,7 +9,9 @@ import (
 )
 
 type Querier interface {
+	CreateChallenge(ctx context.Context, arg CreateChallengeParams) (Challenge, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	GetChallenge(ctx context.Context, id int64) (Challenge, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 }
 
