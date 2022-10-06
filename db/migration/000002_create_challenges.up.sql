@@ -3,6 +3,7 @@ CREATE TABLE "challenges" (
   "start_date" timestamp NOT NULL,
   "name" varchar NOT NULL,
   "description" varchar NOT NULL,
+  "user_id" bigint NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
