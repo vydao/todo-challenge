@@ -10,6 +10,7 @@ import (
 	cors "github.com/rs/cors/wrapper/gin"
 	"github.com/vydao/todo-challenge/api"
 	db "github.com/vydao/todo-challenge/db/sqlc"
+	"github.com/vydao/todo-challenge/token"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -29,12 +30,19 @@ func main() {
 	}
 	log.Println("Migration successful")
 
-	server := api.NewServer(db.NewStore(conn))
+	store := db.NewStore(conn)
+	tokenMaker, err := token.NewJWTMaker("loremipsumdolorsitamet1234567891012131343")
+	if err != nil {
+		log.Fatal("Cannot init token maker:", err)
+	}
+	server := api.NewServer(store, tokenMaker)
+
 	engine := gin.Default()
 	engine.Use(cors.Default())
 	groupV1 := engine.Group("/api/v1")
 	groupV1.Handle(http.MethodGet, "/users/:id", server.GetUserHandler)
 	groupV1.Handle(http.MethodPost, "/users", server.CreateUserHandler)
+	groupV1.Handle(http.MethodPost, "/users/login", server.LoginUserHandler)
 
 	log.Println(engine.Run(":8080"))
 }

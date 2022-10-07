@@ -3,8 +3,10 @@ module github.com/vydao/todo-challenge
 go 1.17
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang-migrate/migrate/v4 v4.15.2
+	github.com/google/uuid v1.3.0
 	github.com/rs/cors/wrapper/gin v0.0.0-20221003140808-fcebdb403f4d
 )
 
