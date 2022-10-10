@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	db "github.com/vydao/todo-challenge/db/sqlc"
 )
 
 const (
@@ -23,8 +24,8 @@ func NewJWTMaker(secretKey string) (Maker, error) {
 	return &JWTMaker{secretKey}, nil
 }
 
-func (m *JWTMaker) CreateToken(username string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, duration)
+func (m *JWTMaker) CreateToken(user db.User, duration time.Duration) (string, error) {
+	payload, err := NewPayload(user, duration)
 	if err != nil {
 		return "", err
 	}
