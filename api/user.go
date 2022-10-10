@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/vydao/todo-challenge/db/sqlc"
@@ -22,16 +23,16 @@ type UserResponse struct {
 func (sv *Server) GetUserHandler(ctx *gin.Context) {
 	var req GetUserRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	user, err := sv.store.GetUser(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.AbortWithStatusJSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"data": UserResponse{
@@ -44,12 +45,12 @@ func (sv *Server) GetUserHandler(ctx *gin.Context) {
 func (sv *Server) CreateUserHandler(ctx *gin.Context) {
 	userReq := db.CreateUserParams{}
 	if err := ctx.BindJSON(&userReq); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	_, err := sv.store.CreateUser(ctx, userReq)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
@@ -68,28 +69,28 @@ type loginUserResponse struct {
 func (sv *Server) LoginUserHandler(ctx *gin.Context) {
 	var req loginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	user, err := sv.store.GetUserByUsername(ctx, req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.AbortWithStatusJSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 	// TODO: should use hashed password
 	if req.Password != user.Password {
 		err = errors.New("the username or password is incorrect")
-		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 		return
 	}
 	// TODO: move duration to config
-	token, err := sv.tokenMaker.CreateToken(user.Username, 1800)
+	token, err := sv.tokenMaker.CreateToken(user, time.Minute*30)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, loginUserResponse{token})

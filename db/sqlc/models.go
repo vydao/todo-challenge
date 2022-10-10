@@ -18,6 +18,16 @@ type Challenge struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type Todo struct {
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	ChallengeID int64     `json:"challenge_id"`
+	Period      string    `json:"period"`
+	Point       float64   `json:"point"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 type User struct {
 	ID        int64     `json:"id"`
 	Username  string    `json:"username"`

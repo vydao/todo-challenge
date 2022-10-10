@@ -39,10 +39,16 @@ func main() {
 
 	engine := gin.Default()
 	engine.Use(cors.Default())
-	groupV1 := engine.Group("/api/v1")
-	groupV1.Handle(http.MethodGet, "/users/:id", server.GetUserHandler)
-	groupV1.Handle(http.MethodPost, "/users", server.CreateUserHandler)
-	groupV1.Handle(http.MethodPost, "/users/login", server.LoginUserHandler)
+	apiV1 := engine.Group("/api/v1")
+	apiV1.Handle(http.MethodPost, "/users/login", server.LoginUserHandler)
+
+	authV1 := apiV1.Group("/")
+	authV1.Use(api.AuthMiddleWare(tokenMaker))
+	authV1.Handle(http.MethodGet, "/users/:id", server.GetUserHandler)
+	authV1.Handle(http.MethodPost, "/users", server.CreateUserHandler)
+	authV1.Handle(http.MethodPost, "/challenges", server.CreateChallengeHandler)
+	authV1.Handle(http.MethodPost, "/challenges/:challenge_id/todos", server.CreateTodoHandler)
+	authV1.Handle(http.MethodGet, "/challenges/:challenge_id/todos", server.GetTodosByChallengeHandler)
 
 	log.Println(engine.Run(":8080"))
 }
