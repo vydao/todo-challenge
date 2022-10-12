@@ -10,9 +10,14 @@ import (
 
 type Querier interface {
 	CreateChallenge(ctx context.Context, arg CreateChallengeParams) (Challenge, error)
+	CreateCompetition(ctx context.Context, arg CreateCompetitionParams) (Competition, error)
 	CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetChallenge(ctx context.Context, id int64) (Challenge, error)
+	GetCompetition(ctx context.Context, id int64) (Competition, error)
+	GetCompetitionsByChallenge(ctx context.Context, challengeID int64) ([]Competition, error)
+	GetCompetitionsByUser(ctx context.Context, challengerID int64) ([]Competition, error)
+	GetCompetitionsByUserAndChallenge(ctx context.Context, arg GetCompetitionsByUserAndChallengeParams) (Competition, error)
 	GetTodo(ctx context.Context, id int64) (Todo, error)
 	GetTodosByChallenge(ctx context.Context, challengeID int64) ([]Todo, error)
 	GetUser(ctx context.Context, id int64) (User, error)

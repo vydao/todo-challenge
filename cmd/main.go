@@ -41,14 +41,15 @@ func main() {
 	engine.Use(cors.Default())
 	apiV1 := engine.Group("/api/v1")
 	apiV1.Handle(http.MethodPost, "/users/login", server.LoginUserHandler)
+	apiV1.Handle(http.MethodPost, "/users", server.CreateUserHandler)
 
 	authV1 := apiV1.Group("/")
 	authV1.Use(api.AuthMiddleWare(tokenMaker))
 	authV1.Handle(http.MethodGet, "/users/:id", server.GetUserHandler)
-	authV1.Handle(http.MethodPost, "/users", server.CreateUserHandler)
 	authV1.Handle(http.MethodPost, "/challenges", server.CreateChallengeHandler)
 	authV1.Handle(http.MethodPost, "/challenges/:challenge_id/todos", server.CreateTodoHandler)
 	authV1.Handle(http.MethodGet, "/challenges/:challenge_id/todos", server.GetTodosByChallengeHandler)
+	authV1.Handle(http.MethodPost, "/challenges/:challenge_id/accept", server.AcceptChallengeHandler)
 
 	log.Println(engine.Run(":8080"))
 }
