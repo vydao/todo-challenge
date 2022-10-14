@@ -33,7 +33,7 @@ func main() {
 	log.Println("Migration successful")
 
 	store := db.NewStore(conn)
-	tokenMaker, err := token.NewJWTMaker("loremipsumdolorsitamet1234567891012131343")
+	tokenMaker, err := token.NewJWTMaker("799464783d372b35e0c02fa1379b98166268d83599f05ad75aa5304ede6800a0")
 	if err != nil {
 		log.Fatal("Cannot init token maker:", err)
 	}
