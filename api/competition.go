@@ -1,6 +1,8 @@
 package api
 
-import "errors"
+import (
+	"errors"
+)
 
 type CompetitionStatus string
 

@@ -28,6 +28,15 @@ type Competition struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
+type CompetitionTodo struct {
+	ID            int64     `json:"id"`
+	CompetitionID int64     `json:"competition_id"`
+	TodoID        int64     `json:"todo_id"`
+	IsCompleted   bool      `json:"is_completed"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
 type Todo struct {
 	ID          int64     `json:"id"`
 	Name        string    `json:"name"`

@@ -1,0 +1,1 @@
+DROP TABLE IF EXIST "competition_todos";
