@@ -9,6 +9,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	cors "github.com/rs/cors/wrapper/gin"
 	"github.com/vydao/todo-challenge/api"
+	"github.com/vydao/todo-challenge/config"
 	db "github.com/vydao/todo-challenge/db/sqlc"
 	"github.com/vydao/todo-challenge/token"
 
@@ -16,14 +17,18 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-var connStr = "postgres://hsiisitqhqcjla:799464783d372b35e0c02fa1379b98166268d83599f05ad75aa5304ede6800a0@ec2-52-70-45-163.compute-1.amazonaws.com:5432/d4sq4jri2g0fsl"
-
 func main() {
-	conn, err := sql.Open("postgres", connStr)
+	conf, err := config.LoadConfig(".")
 	if err != nil {
+		log.Fatal("could not read config:", err)
+	}
+
+	conn, err := sql.Open(conf.Database.DBDriver, conf.Database.DBSource)
+	if err != nil {
+		log.Printf("%+v", conf)
 		log.Fatal("cannot connect to database:", err)
 	}
-	migration, err := migrate.New("file://db/migration", connStr)
+	migration, err := migrate.New(conf.Database.MigrationPath, conf.Database.DBSource)
 	if err != nil {
 		log.Fatal("Migration failed:", err)
 	}
@@ -33,7 +38,7 @@ func main() {
 	log.Println("Migration successful")
 
 	store := db.NewStore(conn)
-	tokenMaker, err := token.NewJWTMaker("799464783d372b35e0c02fa1379b98166268d83599f05ad75aa5304ede6800a0")
+	tokenMaker, err := token.NewJWTMaker(conf.Token.SecretKey)
 	if err != nil {
 		log.Fatal("Cannot init token maker:", err)
 	}
@@ -53,5 +58,5 @@ func main() {
 	authV1.Handle(http.MethodGet, "/challenges/:challenge_id/todos", server.GetTodosByChallengeHandler)
 	authV1.Handle(http.MethodPost, "/challenges/:challenge_id/accept", server.AcceptChallengeHandler)
 
-	log.Println(engine.Run(":80"))
+	log.Println(engine.Run(":8080"))
 }
