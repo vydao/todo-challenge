@@ -1,22 +1,33 @@
-FROM heroku/heroku:20-build as build
+FROM golang:1.17-alpine3.15 AS builder
 
-COPY . /app
+RUN mkdir /app
 WORKDIR /app
+ADD . .
 
-# Setup buildpack
-RUN mkdir -p /tmp/buildpack/heroku/go /tmp/build_cache /tmp/env
-RUN curl https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/go.tgz | tar xz -C /tmp/buildpack/heroku/go
+RUN apk update \
+    && apk add build-base \
+    && apk add --no-cache git \
+    && apk add --no-cache ca-certificates \
+    && apk add --update gcc musl-dev \
+    && update-ca-certificates
 
-#Execute Buildpack
-RUN STACK=heroku-20 /tmp/buildpack/heroku/go/bin/compile /app /tmp/build_cache /tmp/env
+RUN go build -o /app/main /app/cmd/main.go
 
-# Prepare final, minimal image
-FROM heroku/heroku:20
 
-COPY --from=build /app /app
-ENV HOME /app
+FROM alpine:3.15
 WORKDIR /app
-RUN useradd -m heroku
-USER heroku
-EXPOSE 80
-CMD /app/bin/todo-challenge
+COPY --from=builder /app/main .
+COPY db/migration ./db/migration
+COPY app.env .
+
+# ARG REDIS_SOURCE
+# ARG DB_SOURCE
+# ARG JWT_SECRET
+
+# ENV rediscon=$REDIS_SOURCE
+# ENV postgrescon=$DB_SOURCE
+# ENV jwtsecret=$JWT_SECRET
+
+EXPOSE 8080
+
+ENTRYPOINT ["/app/main"]
