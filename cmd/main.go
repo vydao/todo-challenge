@@ -46,6 +46,9 @@ func main() {
 
 	engine := gin.Default()
 	engine.Use(cors.Default())
+	engine.Handle(http.MethodGet, "/health", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{})
+	})
 	apiV1 := engine.Group("/api/v1")
 	apiV1.Handle(http.MethodPost, "/users/login", server.LoginUserHandler)
 	apiV1.Handle(http.MethodPost, "/users", server.CreateUserHandler)
